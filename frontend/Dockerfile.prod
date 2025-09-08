@@ -1,0 +1,54 @@
+# Multi-stage build for optimized production image
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Install security updates
+RUN apk update && apk upgrade && apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S agentflow -u 1001
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Set ownership
+RUN chown -R agentflow:nodejs /usr/share/nginx/html && \
+    chown -R agentflow:nodejs /var/cache/nginx && \
+    chown -R agentflow:nodejs /var/log/nginx && \
+    chown -R agentflow:nodejs /etc/nginx/conf.d
+
+# Switch to non-root user
+USER agentflow
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost/ || exit 1
+
+# Expose port
+EXPOSE 80
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

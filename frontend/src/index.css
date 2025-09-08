@@ -1,0 +1,333 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Inter Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+/* Base layer styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-md;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border/80;
+  }
+
+  /* Selection styles */
+  ::selection {
+    @apply bg-primary/20 text-primary-foreground;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+/* Component layer styles */
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+
+  /* Card styles */
+  .card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-sm bg-white/10 border border-white/20;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-sm bg-black/10 border border-black/20;
+  }
+
+  /* Workflow designer specific styles */
+  .workflow-canvas {
+    @apply bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800;
+  }
+
+  /* Node styles */
+  .node-base {
+    @apply rounded-lg border-2 bg-card shadow-node transition-all duration-200 hover:shadow-node-selected;
+  }
+
+  .node-input {
+    @apply border-node-input bg-node-input/10;
+  }
+
+  .node-output {
+    @apply border-node-output bg-node-output/10;
+  }
+
+  .node-process {
+    @apply border-node-process bg-node-process/10;
+  }
+
+  .node-condition {
+    @apply border-node-condition bg-node-condition/10;
+  }
+
+  .node-ai {
+    @apply border-node-ai bg-node-ai/10;
+  }
+
+  .node-selected {
+    @apply shadow-node-selected scale-105;
+  }
+
+  /* Edge styles */
+  .react-flow__edge-path {
+    @apply stroke-flow-edge stroke-2;
+  }
+
+  .react-flow__edge.selected .react-flow__edge-path {
+    @apply stroke-flow-edge-selected stroke-3;
+  }
+
+  /* Monaco editor styles */
+  .monaco-editor {
+    @apply rounded-md border;
+  }
+
+  /* Sidebar styles */
+  .sidebar {
+    @apply border-r bg-card/50 backdrop-blur-sm;
+  }
+
+  /* Toolbar styles */
+  .toolbar {
+    @apply border-b bg-card/50 backdrop-blur-sm;
+  }
+
+  /* Status indicator */
+  .status-online {
+    @apply bg-green-500;
+  }
+
+  .status-offline {
+    @apply bg-red-500;
+  }
+
+  .status-pending {
+    @apply bg-yellow-500;
+  }
+
+  /* Loading states */
+  .loading-skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  /* Toast styles */
+  .toast-success {
+    @apply bg-green-50 border-green-200 text-green-800;
+  }
+
+  .toast-error {
+    @apply bg-red-50 border-red-200 text-red-800;
+  }
+
+  .toast-warning {
+    @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+  }
+
+  .toast-info {
+    @apply bg-blue-50 border-blue-200 text-blue-800;
+  }
+}
+
+/* Utility layer styles */
+@layer utilities {
+  /* Text utilities */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-out;
+  }
+
+  /* Layout utilities */
+  .container-fluid {
+    @apply w-full max-w-none px-4;
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  /* Spacing utilities */
+  .space-y-fluid > * + * {
+    @apply mt-4;
+  }
+
+  .space-x-fluid > * + * {
+    @apply ml-4;
+  }
+
+  /* Border utilities */
+  .border-dashed-animated {
+    border-style: dashed;
+    animation: dash 20s linear infinite;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+/* React Flow specific styles */
+.react-flow__background {
+  @apply bg-flow-background;
+}
+
+.react-flow__controls {
+  @apply bg-card/80 backdrop-blur-sm border rounded-md shadow-sm;
+}
+
+.react-flow__controls button {
+  @apply border-0 bg-transparent hover:bg-muted transition-colors;
+}
+
+.react-flow__minimap {
+  @apply bg-card/80 backdrop-blur-sm border rounded-md;
+}
+
+.react-flow__attribution {
+  @apply text-xs text-muted-foreground bg-card/50 backdrop-blur-sm rounded px-2 py-1;
+}
+
+/* Custom node types */
+.custom-node {
+  @apply bg-card border-2 rounded-lg shadow-md p-4 min-w-[200px] transition-all duration-200;
+}
+
+.custom-node.selected {
+  @apply border-primary shadow-lg;
+}
+
+.custom-node .node-header {
+  @apply flex items-center gap-2 mb-2 pb-2 border-b;
+}
+
+.custom-node .node-content {
+  @apply text-sm text-muted-foreground;
+}
+
+.custom-node .node-handle {
+  @apply w-3 h-3 border-2 border-white bg-primary rounded-full;
+}
+
+/* Resizer styles */
+.react-flow__resize-control {
+  @apply border border-primary/50 bg-primary/20;
+}
+
+/* Node toolbar */
+.react-flow__node-toolbar {
+  @apply bg-card/90 backdrop-blur-sm border rounded-md shadow-sm p-1;
+}
+
+/* Dark mode specific overrides */
+.dark .react-flow__background {
+  @apply bg-slate-900;
+}
+
+.dark .react-flow__edge-path {
+  @apply stroke-slate-400;
+}
+
+.dark .custom-node {
+  @apply bg-slate-800 border-slate-700;
+}
+
+.dark .custom-node.selected {
+  @apply border-primary;
+}

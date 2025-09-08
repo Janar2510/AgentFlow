@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentflow-config
+  namespace: agentflow
+data:
+  # Application Configuration
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  API_DEBUG: "false"
+  
+  # Database Configuration
+  DATABASE_URL: "postgresql://agentflow:password@postgres:5432/agentflow"
+  REDIS_URL: "redis://redis:6379/0"
+  
+  # Logging Configuration
+  LOG_LEVEL: "INFO"
+  
+  # Feature Flags
+  FEATURE_MARKETPLACE_ENABLED: "true"
+  FEATURE_COLLABORATIVE_EDITING: "true"
+  FEATURE_ADVANCED_ANALYTICS: "true"
+  
+  # Rate Limiting
+  RATE_LIMIT_REQUESTS_PER_MINUTE: "60"
+  RATE_LIMIT_BURST_SIZE: "10"
+  
+  # Kubernetes Configuration
+  K8S_NAMESPACE: "agentflow"
+  K8S_IMAGE_REGISTRY: "registry.agentflow.dev"
+  
+  # Monitoring
+  PROMETHEUS_ENABLED: "true"
+  
+  # Storage Configuration
+  STORAGE_TYPE: "s3"
+  AWS_REGION: "us-east-1"
+  AWS_S3_BUCKET: "agentflow-storage"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentflow-frontend-config
+  namespace: agentflow
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+        root /usr/share/nginx/html;
+        index index.html;
+        
+        # Gzip compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_proxied expired no-cache no-store private must-revalidate auth;
+        gzip_types
+            text/plain
+            text/css
+            text/xml
+            text/javascript
+            application/javascript
+            application/json
+            application/xml+rss;
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' wss: https:;" always;
+        
+        # Handle client-side routing
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+        
+        # API proxy
+        location /api/ {
+            proxy_pass http://agentflow-backend:8000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+        }
+        
+        # WebSocket proxy
+        location /ws {
+            proxy_pass http://agentflow-backend:8000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Cache static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+        
+        # Health check endpoint
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
